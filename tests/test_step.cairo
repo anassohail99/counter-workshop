@@ -1,15 +1,25 @@
 use super::utils::deploy_contract;
-use workshop::counter::{ICounterDispatcher, ICounterDispatcherTrait};
+use workshop::counter::{ICounterDispatcher, ICounterDispatcherTrait, counter_contract};
+use snforge_std::{spy_events, EventSpy, EventSpyAssertionsTrait};
 
 #[test]
-fn increase_counter() {
+fn test_counter_event() {
     let initial_counter = 15;
     let contract_address = deploy_contract(initial_counter);
     let dispatcher = ICounterDispatcher { contract_address };
 
+    let mut spy = spy_events();
     dispatcher.increase_counter();
-    let stored_counter = dispatcher.get_counter();
-    // assert!(stored_counter == initial_counter, "Stored value not equal");
-    assert!(stored_counter == initial_counter + 1, "Stored value not equal");
-}
 
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    counter_contract::Event::CounterIncreased(
+                        counter_contract::CounterIncreased { value: 16 }
+                    )
+                )
+            ]
+        );
+}

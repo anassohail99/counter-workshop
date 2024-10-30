@@ -12,6 +12,18 @@ pub mod counter_contract {
         counter: u32
     }
 
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        CounterIncreased: CounterIncreased,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct CounterIncreased {
+        value: u32,
+    }
+
+
     #[constructor]
     fn constructor(ref self: ContractState, initial_value: u32) {
         self.counter.write(initial_value);
@@ -26,6 +38,7 @@ pub mod counter_contract {
         fn increase_counter(ref self: ContractState) {
             let count: u32 = self.counter.read();
             self.counter.write(count + 1);
+            self.emit(CounterIncreased { value: count + 1 });
         }
     }
 }
