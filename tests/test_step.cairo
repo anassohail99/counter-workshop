@@ -1,13 +1,15 @@
 use super::utils::deploy_contract;
-use snforge_std::{load, map_entry_address};
+use workshop::counter::{ICounterDispatcher, ICounterDispatcherTrait};
 
 #[test]
-fn check_stored_counter() {
-    let initial_counter = 12;
-
+fn increase_counter() {
+    let initial_counter = 15;
     let contract_address = deploy_contract(initial_counter);
+    let dispatcher = ICounterDispatcher { contract_address };
 
-    let loaded = load(contract_address, selector!("counter"), 1);
-
-    assert!(*loaded.at(0) == initial_counter.into(), "Stored value not equal");
+    dispatcher.increase_counter();
+    let stored_counter = dispatcher.get_counter();
+    // assert!(stored_counter == initial_counter, "Stored value not equal");
+    assert!(stored_counter == initial_counter + 1, "Stored value not equal");
 }
+

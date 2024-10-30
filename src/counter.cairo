@@ -1,3 +1,10 @@
+#[starknet::interface]
+trait ICounter<TContractState> {
+    fn get_counter(self: @TContractState) -> u32;
+    fn increase_counter(ref self: TContractState);
+}
+
+
 #[starknet::contract]
 pub mod counter_contract {
     #[storage]
@@ -8,5 +15,17 @@ pub mod counter_contract {
     #[constructor]
     fn constructor(ref self: ContractState, initial_value: u32) {
         self.counter.write(initial_value);
+    }
+
+    #[abi(embed_v0)]
+    impl ContractCounter of super::ICounter<ContractState> {
+        fn get_counter(self: @ContractState) -> u32 {
+            self.counter.read()
+        }
+
+        fn increase_counter(ref self: ContractState) {
+            let count: u32 = self.counter.read();
+            self.counter.write(count + 1);
+        }
     }
 }
