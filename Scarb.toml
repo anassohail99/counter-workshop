@@ -7,6 +7,8 @@ edition = "2023_01"
 
 [dependencies]
 starknet = ">=2.8.0"
+kill_switch = { git = "https://github.com/starknet-edu/kill-switch.git", branch = "master" }
+
 
 [dev-dependencies]
 cairo_test = "2.8.0"
@@ -14,6 +16,8 @@ snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag 
 
 [[target.starknet-contract]]
 casm = true
+build-external-contracts = ["kill_switch::KillSwitch"]
+
 
 [scripts]
 test = "snforge test"

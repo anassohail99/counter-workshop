@@ -6,11 +6,15 @@ trait ICounter<TContractState> {
 
 
 #[starknet::contract]
-pub mod counter_contract {
+mod counter_contract {
+    use core::starknet::{ContractAddress};
+
     #[storage]
     struct Storage {
-        counter: u32
+        counter: u32,
+        kill_switch: ContractAddress,
     }
+
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -25,8 +29,11 @@ pub mod counter_contract {
 
 
     #[constructor]
-    fn constructor(ref self: ContractState, initial_value: u32) {
+    fn constructor(
+        ref self: ContractState, initial_value: u32, killSwitchAddress: ContractAddress
+    ) {
         self.counter.write(initial_value);
+        self.kill_switch.write(killSwitchAddress);
     }
 
     #[abi(embed_v0)]
